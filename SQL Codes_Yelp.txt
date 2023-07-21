@@ -1,0 +1,247 @@
+SQL Codes
+--number of reviews of business with ratings >=4
+
+select business_id, count(business_id) as review_no, business.stars
+from review join business using (business_id)
+where business.stars>=4
+group by business_id
+order by business.stars desc;
+
+--number of reviews of business with ratings <=3
+
+select business_id, count(business_id) as review_no, business.stars
+from review join business using (business_id)
+where business.stars<=3
+group by business_id
+order by business.stars desc;
+
+
+--types of label 
+--sort labels for businesses with ratings >=4
+SELECT
+business_id,
+name,
+stars,
+SUM(CASE WHEN photos.label = 'inside' THEN 1 ELSE 0 END) AS inside_count,
+SUM(CASE WHEN photos.label = 'food' THEN 1 ELSE 0 END) AS food_count,
+SUM(CASE WHEN photos.label = 'drink' THEN 1 ELSE 0 END) AS drink_count,
+SUM(CASE WHEN photos.label = 'outside' THEN 1 ELSE 0 END) AS outside_count,
+SUM(CASE WHEN photos.label = 'menu' THEN 1 ELSE 0 END) AS menu_count
+FROM business
+INNER JOIN photos ON business.business_id = photos.business_id
+WHERE business.stars >= 4
+GROUP BY business.business_id, business.name, business.stars
+ORDER BY business.stars DESC;
+
+--sort labels for businesses with ratings<=3
+SELECT
+business_id,
+name,
+stars,
+SUM(CASE WHEN photos.label = 'inside' THEN 1 ELSE 0 END) AS inside_count,
+SUM(CASE WHEN photos.label = 'food' THEN 1 ELSE 0 END) AS food_count,
+SUM(CASE WHEN photos.label = 'drink' THEN 1 ELSE 0 END) AS drink_count,
+SUM(CASE WHEN photos.label = 'outside' THEN 1 ELSE 0 END) AS outside_count,
+SUM(CASE WHEN photos.label = 'menu' THEN 1 ELSE 0 END) AS menu_count
+FROM business
+INNER JOIN photos ON business.business_id = photos.business_id
+WHERE business.stars<= 3
+GROUP BY business.business_id, business.name, business.stars
+ORDER BY business.stars DESC;
+
+
+--no of photos of business with ratings >=4
+
+select business_id, count(photo_id) as photo_no, business.stars
+from photos join business using (business_id)
+where business.stars>=4
+group by business_id
+order by business.stars desc;
+
+--no of photos of business with ratings <=3
+
+select business_id, count(photo_id) as photo_no, business.stars
+from photos join business using (business_id)
+where business.stars<=3
+group by business_id
+order by business.stars desc;
+
+--no of tips of business with ratings >=4
+
+select business_id, count(text) as tip_no, business.stars
+from tip join business using (business_id)
+where business.stars>=4
+group by business_id
+order by business.stars desc;
+
+--no of tips of business with ratings >=4
+
+select business_id, count(text) as tip_no, business.stars
+from tip join business using (business_id)
+where business.stars<=3
+group by business_id
+order by business.stars desc;
+
+--length of business hours
+
+create temporary table t1 as
+
+select business_id,"hours.Monday",
+       (CAST (Substr("hours.Monday",1,instr("hours.Monday", '-')-1)as int))
+       +case when Substr("hours.Monday",instr("hours.Monday", ':')+1, 1)='3' then 0.5 else 0
+       end as Monstarttime,
+       (CAST (Substr("hours.Monday", instr("hours.Monday",'-')+1, length("hours.Monday"))as int))
+       +case when (Substr("hours.Monday",instr("hours.Monday",'-')+3, 1)='3' 
+                   or Substr("hours.Monday",instr("hours.Monday",'-')+4, 1)='3') then 0.5 else 0
+       end as Monendtime
+from business
+where "hours.Monday" is not "N/A" and "hours.Monday" is not null;
+
+create temporary table t2 as
+
+select business_id,"hours.Tuesday",
+       (CAST (Substr("hours.Tuesday",1,instr("hours.Tuesday", '-')-1)as int))
+       +case when Substr("hours.Tuesday",instr("hours.Tuesday", ':')+1, 1)='3' then 0.5 else 0
+       end as Tuestarttime,
+       (CAST (Substr("hours.Tuesday", instr("hours.Tuesday",'-')+1, length("hours.Tuesday"))as int))
+       +case when (Substr("hours.Tuesday",instr("hours.Tuesday",'-')+3, 1)='3' 
+                   or Substr("hours.Tuesday",instr("hours.Tuesday",'-')+4, 1)='3') then 0.5 else 0
+       end as Tueendtime
+from business
+where "hours.Tuesday" is not "N/A" and "hours.Tuesday" is not null;
+
+create temporary table t3 as
+
+select business_id,"hours.Wednesday",
+       (CAST (Substr("hours.Wednesday",1,instr("hours.Wednesday", '-')-1)as int))
+       +case when Substr("hours.Wednesday",instr("hours.Wednesday", ':')+1, 1)='3' then 0.5 else 0
+       end as Wedstarttime,
+       (CAST (Substr("hours.Wednesday", instr("hours.Wednesday",'-')+1, length("hours.Wednesday"))as int))
+       +case when (Substr("hours.Wednesday",instr("hours.Wednesday",'-')+3, 1)='3' 
+                   or Substr("hours.Wednesday",instr("hours.Wednesday",'-')+4, 1)='3') then 0.5 else 0
+       end as Wedendtime
+from business
+where "hours.Wednesday" is not "N/A" and "hours.Wednesday" is not null;
+
+create temporary table t4 as
+
+select business_id,"hours.Thursday",
+       (CAST (Substr("hours.Thursday",1,instr("hours.Thursday", '-')-1)as int))
+       +case when Substr("hours.Thursday",instr("hours.Thursday", ':')+1, 1)='3' then 0.5 else 0
+       end as Thustarttime,
+       (CAST (Substr("hours.Thursday", instr("hours.Thursday",'-')+1, length("hours.Thursday"))as int))
+       +case when (Substr("hours.Thursday",instr("hours.Thursday",'-')+3, 1)='3' 
+                   or Substr("hours.Thursday",instr("hours.Thursday",'-')+4, 1)='3') then 0.5 else 0
+       end as Thuendtime
+from business
+where "hours.Thursday" is not "N/A" and "hours.Thursday" is not null;
+
+create temporary table t5 as
+
+select business_id,"hours.Friday",
+       (CAST (Substr("hours.Friday",1,instr("hours.Friday", '-')-1)as int))
+       +case when Substr("hours.Friday",instr("hours.Friday", ':')+1, 1)='3' then 0.5 else 0
+       end as Fristarttime,
+       (CAST (Substr("hours.Friday", instr("hours.Friday",'-')+1, length("hours.Friday"))as int))
+       +case when (Substr("hours.Friday",instr("hours.Friday",'-')+3, 1)='3' 
+                   or Substr("hours.Friday",instr("hours.Friday",'-')+4, 1)='3') then 0.5 else 0
+       end as Friendtime
+from business
+where "hours.Friday" is not "N/A" and "hours.Friday" is not null;
+
+create temporary table t6 as
+
+select t1.business_id, business.stars,
+       case when (Monendtime-Monstarttime)>0 then (Monendtime-Monstarttime) 
+            when (Monendtime-Monstarttime)<=0 then (Monendtime-Monstarttime+24) 
+       end as Monhours,
+       case when (Tueendtime-Tuestarttime)>0 then (Tueendtime-Tuestarttime) 
+            when (Tueendtime-Tuestarttime)<=0 then (Tueendtime-Tuestarttime+24)
+       end as Tuehours,
+       case when (Wedendtime-Wedstarttime)>0 then (Wedendtime-Wedstarttime) 
+            when (Wedendtime-Wedstarttime)<=0 then (Wedendtime-Wedstarttime+24)
+       end as Wedhours,
+       case when (Thuendtime-Thustarttime)>0 then (Thuendtime-Thustarttime) 
+            when (Thuendtime-Thustarttime)<=0 then (Thuendtime-Thustarttime+24)
+       end as Thuhours,
+       case when (Friendtime-Fristarttime)>0 then (Friendtime-Fristarttime) 
+            when (Friendtime-Fristarttime)<=0 then (Friendtime-Fristarttime+24)
+       end as Frihours
+from t1,t2,t3,t4,t5,business
+where (Monhours+Tuehours+Wedhours+Thuhours+Frihours)<>0
+       and t1.business_id=t2.business_id
+       and t1.business_id=t3.business_id
+       and t1.business_id=t4.business_id
+       and t1.business_id=t5.business_id
+       and t1.business_id=business.business_id;
+
+----length of hours of business with ratings >=4
+select business_id,stars,Monhours,Tuehours,Wedhours,Thuhours,Frihours,
+       (Monhours+Tuehours+Wedhours+Thuhours+Frihours)as totalhours
+from t6
+where stars>=4
+group by business_id
+order by stars desc;
+
+----length of hours of business with ratings <=3
+select business_id,stars,Monhours,Tuehours,Wedhours,Thuhours,Frihours,
+       (Monhours+Tuehours+Wedhours+Thuhours+Frihours)as totalhours
+from t6
+where stars<=3
+group by business_id
+order by stars desc;
+
+
+
+
+What are the top 100 users who have the most fans?
+select user_id, name, fans, elite, review_count, yelping_since
+from user
+group by user_id, name
+order by fans desc
+limit 100;
+
+How many of the top 100 users are elite yelpers?
+select user_id, name, fans, review_count
+from
+(select user_id, name, fans, elite, review_count
+from user
+group by user_id, name
+order by fans desc
+limit 100)
+where elite is not null
+group by user_id, name
+order by fans desc;
+
+● Do users who start using yelp earlier have more fans?
+select user_id, name, fans, 2023 - strftime("%Y", yelping_since) as Sign_Up_Period, review_count
+from user
+group by user_id, name
+order by fans desc;Do users who start using yelp earlier have more fans? (correlation)
+select user_id, name, fans, 2023 - strftime("%Y", yelping_since) as Sign_Up_Period, review_count
+from user
+group by user_id, name
+order by fans desc;
+Calculate user’s weekly activeness
+select user_id,
+name,
+fans,
+review_count,
+strftime("%J", date('now','localtime')) - strftime("%J", date(yelping_since))+1 as Days_Difference,
+round(((strftime("%J", date('now','localtime')) - strftime("%J", date(yelping_since))+1) / 7) / review_count, 0) as Daily_Activeness
+from user
+group by user_id, name;
+Find the correlation between popular user review and business’ overall rating
+select user.user_id, user.name, user.fans, review.review_id, business.business_id, review.stars, business.stars as Average_Stars
+from user join review on user.user_id = review.user_id
+join business on review.business_id = business.business_id
+where user.fans >= 30
+group by user.user_id, user.name, review.review_id, review.stars, business.stars
+order by user.fans desc;
+Find the overview of photo reviews regarding labels
+select name, label, count(*) as Num_Of_Photo
+from photos join business using (business_id)
+group by name, label;
+
+
+
